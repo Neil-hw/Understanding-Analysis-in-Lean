@@ -23,10 +23,10 @@ theorem root2Irrational : ∀ (x : ℚ), x^2 ≠ 2 := by
   -- (1): (p/q)^2 = 2
   have hqNot0' : (q : ℚ) ≠ 0 := by exact_mod_cast hqNot0
   rw [hfracx] at hx
-  field_simp at hx
 
-  -- (2): p^2 = 2 q^2, now as an equation of integers
-  have h1 : p^2 = q^2 * 2 := by exact_mod_cast hx
+  -- (2): p^2 = 2 * q^2, now as an equation of integers
+  field_simp at hx
+  have h1 : p^2 = 2 * q^2 := by exact_mod_cast hx
 
   -- p^2 is even, hence p is even
   have hp : Even p := by
