@@ -1,7 +1,7 @@
-name = "Understanding Analysis in Lean"
+name = "UA_Lean"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["«Understanding Analysis in Lean»"]
+defaultTargets = ["UA_Lean"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -15,4 +15,4 @@ scope = "leanprover-community"
 rev = "v4.36.0-rc2"
 
 [[lean_lib]]
-name = "«Understanding Analysis in Lean»"
+name = "UA_Lean"
