@@ -7,6 +7,18 @@ import Mathlib.Tactic.ReduceModChar
 /-!Docstring-/
 set_option linter.style.emptyLine false
 
+-- If an integer n^2 is even then n is even
+-- (To reduce the amount of repeated code)
+lemma evenSqrdImpEven (n : ℤ) : Even (n^2) → Even n := by
+  intro nSqrEven
+  by_contra nOdd
+  rw [Int.not_even_iff_odd] at nOdd
+  -- Because the square of an odd number is odd
+  have nSqrOdd : Odd (n^2) := by
+    exact Odd.pow nOdd
+  rw [← Int.not_even_iff_odd] at nSqrOdd
+  exact nSqrOdd nSqrEven
+
 theorem root2Irrational : ∀ (x : ℚ), x^2 ≠ 2 := by
   intro x hx
 
@@ -24,27 +36,32 @@ theorem root2Irrational : ∀ (x : ℚ), x^2 ≠ 2 := by
   have hqNot0' : (q : ℚ) ≠ 0 := by exact_mod_cast hqNot0
   rw [hfracx] at hx
 
-  -- (2): p^2 = 2 * q^2, now as an equation of integers
+  -- (2): p^2 = 2 * q^2, now with integers
   field_simp at hx
-  have h1 : p^2 = 2 * q^2 := by exact_mod_cast hx
+  rw [mul_comm] at hx
+  norm_cast at hx
 
-  -- p^2 is even, hence p is even
-  have hp : Even p := by
-    have : Even (p^2) := ⟨q^2, by rw [h1]; ring⟩
-    exact (Int.even_pow.mp this).1
+  -- The integer p^2 is an even number
+  have hpSqrEven : Even (p^2) := ⟨q^2, by rw [hx]; ring⟩
 
-  -- write p = 2r
-  obtain ⟨r, hr⟩ := hp
+  -- So p must be even as well
+  have hpEven : Even p := by
+    exact evenSqrdImpEven p hpSqrEven
+
+  -- This allows us to write p = 2 * r
+  obtain ⟨r, hr⟩ := hpEven
+  ring_nf at hr
+  rw [mul_comm] at hr
   subst hr
 
   -- substituting gives q^2 = 2 r^2
-  have h2 : q^2 = 2 * r^2 := by nlinarith [h1]
+  have hx' : q^2 = 2 * r^2 := by linarith
 
   -- q^2 is even, hence q is even
-  have hqNot02 : Even q := by
-    have : Even (q^2) := ⟨r^2, by rw [h2]; ring⟩
-    exact (Int.even_pow.mp this).1
-  obtain ⟨e, he⟩ := hqNot02
+  have hqEven : Even q := by
+    have hqSqrEven: Even (q^2) := ⟨r^2, by rw [hx']; ring⟩
+    exact evenSqrdImpEven q hqSqrEven
+  obtain ⟨e, he⟩ := hqEven
   subst he
 
   -- p and q are both even, contradicting "no common factor"
